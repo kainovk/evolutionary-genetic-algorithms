@@ -2,34 +2,41 @@ package hill_climbing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import static util.AdaptibilityUtils.generateBinary;
+import static util.AdaptibilityUtils.getAdaptabilityDecimal;
+import static util.LandscapeUtils.generateLandscape;
+import static util.LandscapeUtils.printLandscape;
 
 public class HillClimbingDepth {
 
     private static final Random rand = new Random();
 
     public static void hillClimbingDepthMethod(int l, int n) {
+        System.out.println("Initial parameters: L=" + l + ", N=" + n);
+
         String binary = generateBinary(l);
         String maxS = binary;
-        int max = getAdaptability(maxS);
+        int max = getAdaptabilityDecimal(maxS);
         List<String> neighbours = getNeighbours(maxS, l);
 
-        System.out.println("Initial parameters: L=" + l + ", N=" + n);
         for (int i = 0; i < n; i++) {
             System.out.println("Step " + (i + 1));
-            System.out.println("Current s=" + binary + ", max=" + max + ", maxS=" + maxS);
-            System.out.println("Current neighbours=" + neighbours);
             if (neighbours.isEmpty()) {
                 break;
             }
             int randomIndex = rand.nextInt(neighbours.size());
             binary = neighbours.get(randomIndex);
             neighbours.remove(randomIndex);
-            if (max < getAdaptability(binary)) {
+            if (max < getAdaptabilityDecimal(binary)) {
                 maxS = binary;
-                max = getAdaptability(maxS);
+                max = getAdaptabilityDecimal(maxS);
                 neighbours = getNeighbours(maxS, l);
             }
+            System.out.println("Current s=" + binary + ", max=" + max + ", maxS=" + maxS);
+            System.out.println("Current neighbours=" + neighbours);
         }
         System.out.println("\nFound solution:\nmax=" + max + ", maxS=" + maxS);
     }
@@ -48,20 +55,11 @@ public class HillClimbingDepth {
         return neighbours;
     }
 
-    // value of decimal interpretation of a binary number
-    private static int getAdaptability(String binary) {
-        return Integer.parseInt(binary, 2);
-    }
-
-    private static String generateBinary(int length) {
-        StringBuilder binary = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            binary.append(rand.nextInt(2));
-        }
-        return binary.toString();
-    }
-
     public static void main(String[] args) {
-        hillClimbingDepthMethod(5, 32);
+        int l = 5;
+        int n = 32;
+        Map<String, Integer> landscape = generateLandscape(l);
+        printLandscape(landscape);
+        hillClimbingDepthMethod(l, n);
     }
 }

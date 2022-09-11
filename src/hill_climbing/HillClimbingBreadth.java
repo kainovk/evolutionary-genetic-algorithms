@@ -2,34 +2,38 @@ package hill_climbing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+
+import static util.AdaptibilityUtils.generateBinary;
+import static util.AdaptibilityUtils.getAdaptabilityDecimal;
+import static util.LandscapeUtils.generateLandscape;
+import static util.LandscapeUtils.printLandscape;
 
 public class HillClimbingBreadth {
 
-    private static final Random rand = new Random();
-
     public static void hillClimbingBreadthMethod(int l, int n) {
+        System.out.println("Initial parameters: L=" + l + ", N=" + n);
+
         String binary = generateBinary(l);
         String maxS = binary;
-        int max = getAdaptability(maxS);
+        int max = getAdaptabilityDecimal(maxS);
         List<String> neighbours = getNeighbours(maxS, l);
 
-        System.out.println("Initial parameters: L=" + l + ", N=" + n);
         for (int i = 0; i < n; i++) {
             System.out.println("Step " + (i + 1));
-            System.out.println("Current s=" + binary + ", max=" + max + ", maxS=" + maxS);
-            System.out.println("Current neighbours=" + neighbours);
             if (neighbours.isEmpty()) {
                 break;
             }
             binary = getBestNeighbour(neighbours);
-            if (max < getAdaptability(binary)) {
+            if (max < getAdaptabilityDecimal(binary)) {
                 maxS = binary;
-                max = getAdaptability(maxS);
+                max = getAdaptabilityDecimal(maxS);
                 neighbours = getNeighbours(maxS, l);
             } else {
                 break;
             }
+            System.out.println("Current s=" + binary + ", max=" + max + ", maxS=" + maxS);
+            System.out.println("Current neighbours=" + neighbours);
         }
         System.out.println("\nFound solution:\nmax=" + max + ", maxS=" + maxS);
     }
@@ -38,7 +42,7 @@ public class HillClimbingBreadth {
         String best = "";
         int max = 0;
         for (String n : neighbours) {
-            int adaptability = getAdaptability(n);
+            int adaptability = getAdaptabilityDecimal(n);
             if (max < adaptability) {
                 max = adaptability;
                 best = n;
@@ -61,20 +65,11 @@ public class HillClimbingBreadth {
         return neighbours;
     }
 
-    // value of decimal interpretation of a binary number
-    private static int getAdaptability(String binary) {
-        return Integer.parseInt(binary, 2);
-    }
-
-    private static String generateBinary(int l) {
-        StringBuilder binary = new StringBuilder();
-        for (int i = 0; i < l; i++) {
-            binary.append(rand.nextInt(2));
-        }
-        return binary.toString();
-    }
-
     public static void main(String[] args) {
-        hillClimbingBreadthMethod(5, 32);
+        int l = 5;
+        int n = 32;
+        Map<String, Integer> landscape = generateLandscape(l);
+        printLandscape(landscape);
+        hillClimbingBreadthMethod(l, n);
     }
 }
