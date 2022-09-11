@@ -6,9 +6,7 @@ public class MonteCarlo {
 
     private static final Random rand = new Random();
 
-    public static void main(String[] args) {
-        int l = 15;
-        int n = 32;
+    public static void monteCarloMethod(int l, int  n) {
         int max = 0;
         String maxS = "empty";
 
@@ -37,5 +35,9 @@ public class MonteCarlo {
             binary.append(rand.nextInt(2));
         }
         return binary.toString();
+    }
+
+    public static void main(String[] args) {
+        monteCarloMethod(15, 32);
     }
 }
