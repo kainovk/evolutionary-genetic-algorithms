@@ -23,12 +23,12 @@ public class HillClimbingBreadth {
         Map<String, Object> ans = new HashMap<>();
 
         for (int i = 0; i < n; i++) {
-            System.out.println("Step " + (i + 1));
             if (neighbours.isEmpty()) {
                 break;
             }
             binary = getBestNeighbour(neighbours);
             if (max < getAdaptabilityDecimal(binary)) {
+                System.out.println("Step " + (i + 1));
                 maxS = binary;
                 max = getAdaptabilityDecimal(maxS);
                 neighbours = getNeighbours(maxS, l);

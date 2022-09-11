@@ -26,10 +26,10 @@ public class HillClimbingDepth {
         Map<String, Object> ans = new HashMap<>();
 
         for (int i = 0; i < n; i++) {
-            System.out.println("Step " + (i + 1));
             if (neighbours.isEmpty()) {
                 break;
             }
+            System.out.println("Step " + (i + 1));
             int randomIndex = rand.nextInt(neighbours.size());
             binary = neighbours.get(randomIndex);
             neighbours.remove(randomIndex);
