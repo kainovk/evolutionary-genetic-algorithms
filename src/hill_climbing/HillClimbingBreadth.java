@@ -1,5 +1,7 @@
 package hill_climbing;
 
+import util.LandscapeUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,8 +9,7 @@ import java.util.Map;
 
 import static util.AdaptibilityUtils.generateBinary;
 import static util.AdaptibilityUtils.getAdaptabilityDecimal;
-import static util.LandscapeUtils.generateLandscape;
-import static util.LandscapeUtils.printLandscape;
+import static util.LandscapeUtils.generateLandscapeDecimal;
 
 public class HillClimbingBreadth {
 
@@ -72,8 +73,8 @@ public class HillClimbingBreadth {
     public static void main(String[] args) {
         int l = 5;
         int n = 32;
-        Map<String, Integer> landscape = generateLandscape(l);
-        printLandscape(landscape);
+        Map<String, Integer> landscape = generateLandscapeDecimal(l);
+        LandscapeUtils.printLandscapeInteger(landscape);
         Map<String, Object> ans = hillClimbingBreadthMethod(l, n);
         System.out.println("\nFound solution:\nmax=" + ans.get("max") + ", maxS=" + ans.get("maxS"));
     }
