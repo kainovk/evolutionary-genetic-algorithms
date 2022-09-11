@@ -8,17 +8,14 @@ public class HillClimbingDepth {
 
     private static final Random rand = new Random();
 
-    private static final int L = 5;
-    private static final int N = 32;
-
-    public static void main(String[] args) {
-        String binary = generateBinary(L);
+    public static void hillClimbingDepthMethod(int l, int n) {
+        String binary = generateBinary(l);
         String maxS = binary;
         int max = getAdaptability(maxS);
-        List<String> neighbours = getNeighbours(maxS);
+        List<String> neighbours = getNeighbours(maxS, l);
 
-        System.out.println("Initial parameters: L=" + L + ", N=" + N);
-        for (int i = 0; i < N; i++) {
+        System.out.println("Initial parameters: L=" + l + ", N=" + n);
+        for (int i = 0; i < n; i++) {
             System.out.println("Step " + (i + 1));
             System.out.println("Current s=" + binary + ", max=" + max + ", maxS=" + maxS);
             System.out.println("Current neighbours=" + neighbours);
@@ -31,15 +28,15 @@ public class HillClimbingDepth {
             if (max < getAdaptability(binary)) {
                 maxS = binary;
                 max = getAdaptability(maxS);
-                neighbours = getNeighbours(maxS);
+                neighbours = getNeighbours(maxS, l);
             }
         }
         System.out.println("\nFound solution:\nmax=" + max + ", maxS=" + maxS);
     }
 
-    private static List<String> getNeighbours(String binary) {
+    private static List<String> getNeighbours(String binary, int l) {
         List<String> neighbours = new ArrayList<>();
-        for (int i = 0; i < L; i++) {
+        for (int i = 0; i < l; i++) {
             StringBuilder sb = new StringBuilder(binary);
             char replaceChar = '0';
             if (binary.charAt(i) == '0') {
@@ -62,5 +59,9 @@ public class HillClimbingDepth {
             binary.append(rand.nextInt(2));
         }
         return binary.toString();
+    }
+
+    public static void main(String[] args) {
+        hillClimbingDepthMethod(5, 32);
     }
 }
