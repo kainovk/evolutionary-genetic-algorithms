@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static util.AdaptibilityUtils.generateBinary;
-import static util.AdaptibilityUtils.getAdaptabilityDecimal;
-import static util.LandscapeUtils.generateLandscape;
-import static util.LandscapeUtils.printLandscape;
+import static util.AdaptibilityUtils.*;
+import static util.LandscapeUtils.*;
 
 public class HillClimbingDepth {
 
@@ -19,7 +17,7 @@ public class HillClimbingDepth {
 
         String binary = generateBinary(l);
         String maxS = binary;
-        int max = getAdaptabilityDecimal(maxS);
+        double max = getAdaptabilityQuadric(maxS, l);
         List<String> neighbours = getNeighbours(maxS, l);
 
         for (int i = 0; i < n; i++) {
@@ -30,12 +28,14 @@ public class HillClimbingDepth {
             int randomIndex = rand.nextInt(neighbours.size());
             binary = neighbours.get(randomIndex);
             neighbours.remove(randomIndex);
-            if (max < getAdaptabilityDecimal(binary)) {
+            double adaptibility = getAdaptabilityQuadric(binary, l);
+            if (max < adaptibility) {
                 maxS = binary;
-                max = getAdaptabilityDecimal(maxS);
+                max = adaptibility;
                 neighbours = getNeighbours(maxS, l);
+                System.out.println("MAX CHANGED!!");
             }
-            System.out.println("Current s=" + binary + ", max=" + max + ", maxS=" + maxS);
+            System.out.println("Current s=" + binary + ", u=" + adaptibility + ", max=" + max + ", maxS=" + maxS);
             System.out.println("Current neighbours=" + neighbours);
         }
         System.out.println("\nFound solution:\nmax=" + max + ", maxS=" + maxS);
@@ -57,9 +57,9 @@ public class HillClimbingDepth {
 
     public static void main(String[] args) {
         int l = 5;
-        int n = 32;
-        Map<String, Integer> landscape = generateLandscape(l);
-        printLandscape(landscape);
+        int n = 10;
+        Map<String, Double> landscape = generateLandscapeDouble(l);
+        printLandscapeDouble(landscape);
         hillClimbingDepthMethod(l, n);
     }
 }

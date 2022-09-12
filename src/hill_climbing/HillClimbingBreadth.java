@@ -6,8 +6,8 @@ import java.util.Map;
 
 import static util.AdaptibilityUtils.generateBinary;
 import static util.AdaptibilityUtils.getAdaptabilityDecimal;
-import static util.LandscapeUtils.generateLandscape;
-import static util.LandscapeUtils.printLandscape;
+import static util.LandscapeUtils.generateLandscapeDecimal;
+import static util.LandscapeUtils.printLandscapeDecimal;
 
 public class HillClimbingBreadth {
 
@@ -25,14 +25,16 @@ public class HillClimbingBreadth {
                 break;
             }
             binary = getBestNeighbour(neighbours);
-            if (max < getAdaptabilityDecimal(binary)) {
+            int adaptability = getAdaptabilityDecimal(binary);
+            if (max < adaptability) {
                 maxS = binary;
-                max = getAdaptabilityDecimal(maxS);
+                max = adaptability;
                 neighbours = getNeighbours(maxS, l);
+                System.out.println("MAX CHANGED!!");
             } else {
                 break;
             }
-            System.out.println("Current s=" + binary + ", max=" + max + ", maxS=" + maxS);
+            System.out.println("Current s=" + binary + ", u=" + adaptability+ ", max=" + max + ", maxS=" + maxS);
             System.out.println("Current neighbours=" + neighbours);
         }
         System.out.println("\nFound solution:\nmax=" + max + ", maxS=" + maxS);
@@ -68,8 +70,8 @@ public class HillClimbingBreadth {
     public static void main(String[] args) {
         int l = 5;
         int n = 32;
-        Map<String, Integer> landscape = generateLandscape(l);
-        printLandscape(landscape);
+        Map<String, Integer> landscape = generateLandscapeDecimal(l);
+        printLandscapeDecimal(landscape);
         hillClimbingBreadthMethod(l, n);
     }
 }
