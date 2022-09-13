@@ -28,14 +28,14 @@ public class HillClimbingDepth {
             int randomIndex = rand.nextInt(neighbours.size());
             binary = neighbours.get(randomIndex);
             neighbours.remove(randomIndex);
-            double adaptibility = getAdaptabilityQuadric(binary, l);
-            if (max < adaptibility) {
+            double adaptability = getAdaptabilityQuadric(binary, l);
+            if (max < adaptability) {
                 maxS = binary;
-                max = adaptibility;
+                max = adaptability;
                 neighbours = getNeighbours(maxS, l);
                 System.out.println("MAX CHANGED!!");
             }
-            System.out.println("Current s=" + binary + ", u=" + adaptibility + ", max=" + max + ", maxS=" + maxS);
+            System.out.println("Current s=" + binary + ", u=" + adaptability + ", max=" + max + ", maxS=" + maxS);
             System.out.println("Current neighbours=" + neighbours);
         }
         System.out.println("\nFound solution:\nmax=" + max + ", maxS=" + maxS);

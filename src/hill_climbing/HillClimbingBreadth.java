@@ -69,7 +69,7 @@ public class HillClimbingBreadth {
 
     public static void main(String[] args) {
         int l = 5;
-        int n = 32;
+        int n = 10;
         Map<String, Integer> landscape = generateLandscapeDecimal(l);
         printLandscapeDecimal(landscape);
         hillClimbingBreadthMethod(l, n);
