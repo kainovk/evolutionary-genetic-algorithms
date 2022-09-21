@@ -1,24 +1,29 @@
 package hill_climbing;
 
+import util.LandscapeUtils;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static util.AdaptibilityUtils.*;
-import static util.LandscapeUtils.*;
+import static util.AdaptibilityUtils.generateBinary;
+import static util.AdaptibilityUtils.getAdaptability5SinPlusLn;
+import static util.LandscapeUtils.generateLandscapeDecimal;
 
 public class HillClimbingDepth {
 
     private static final Random rand = new Random();
 
-    public static void hillClimbingDepthMethod(int l, int n) {
+    public static Map<String, Object> hillClimbingDepthMethod(int l, int n) {
         System.out.println("Initial parameters: L=" + l + ", N=" + n);
 
         String binary = generateBinary(l);
         String maxS = binary;
-        double max = getAdaptabilityQuadric(maxS, l);
+        double max = getAdaptability5SinPlusLn(maxS);
         List<String> neighbours = getNeighbours(maxS, l);
+        Map<String, Object> ans = new HashMap<>();
 
         for (int i = 0; i < n; i++) {
             System.out.println("Step " + (i + 1));
@@ -28,7 +33,7 @@ public class HillClimbingDepth {
             int randomIndex = rand.nextInt(neighbours.size());
             binary = neighbours.get(randomIndex);
             neighbours.remove(randomIndex);
-            double adaptability = getAdaptabilityQuadric(binary, l);
+            double adaptability = getAdaptability5SinPlusLn(binary);
             if (max < adaptability) {
                 maxS = binary;
                 max = adaptability;
@@ -39,6 +44,9 @@ public class HillClimbingDepth {
             System.out.println("Current neighbours=" + neighbours);
         }
         System.out.println("\nFound solution:\nmax=" + max + ", maxS=" + maxS);
+        ans.put("max", max);
+        ans.put("maxS", maxS);
+        return ans;
     }
 
     private static List<String> getNeighbours(String binary, int l) {
@@ -57,9 +65,10 @@ public class HillClimbingDepth {
 
     public static void main(String[] args) {
         int l = 5;
-        int n = 10;
-        Map<String, Double> landscape = generateLandscapeDouble(l);
-        printLandscapeDouble(landscape);
-        hillClimbingDepthMethod(l, n);
+        int n = 32;
+        Map<String, Integer> landscape = generateLandscapeDecimal(l);
+        LandscapeUtils.printLandscapeInteger(landscape);
+        Map<String, Object> ans = hillClimbingDepthMethod(l, n);
+        System.out.println("\nFound solution:\nmax=" + ans.get("max") + ", maxS=" + ans.get("maxS"));
     }
 }

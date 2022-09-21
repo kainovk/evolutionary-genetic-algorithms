@@ -10,9 +10,9 @@ public class AdaptibilityUtils {
         return Integer.parseInt(binary, 2);
     }
 
-    public static double getAdaptabilityQuadric(String binary, int l) {
-        int decimal = Integer.parseInt(binary, 2);
-        return Math.pow((decimal - Math.pow(2, l - 1)), 2);
+    public static double getAdaptability5SinPlusLn(String binary) {
+        double decimal = Integer.parseInt(binary, 2);
+        return 5 * Math.sin(decimal) + Math.log1p(decimal);
     }
 
     public static String generateBinary(int length) {
