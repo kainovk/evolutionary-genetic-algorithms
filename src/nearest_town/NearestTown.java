@@ -1,11 +1,9 @@
 package nearest_town;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 
 public class NearestTown {
@@ -13,50 +11,86 @@ public class NearestTown {
     private static final Random rand = new Random();
 
     public static void nearestTownMethod(int townCount) {
-        List<Integer> townsLeft = generateTownsSequentially(townCount);
+        List<Integer> visitFrom = generateTownsSequentially(townCount);
+        List<Integer> visitTo = generateTownsSequentially(townCount);
+        //int[][] townsDistance = prepareConstantMatrix(townCount);
+        //int[][] townsDistance = prepareConstantMatrix2();
         int[][] townsDistance = fillRandom(townCount);
         printTownsDistance(townsDistance);
         System.out.println();
-        Map<Integer, Integer> passage = new HashMap<>();
+        Map<Integer, Integer> visitedBy = new HashMap<>();
         //Integer startTown = rand.nextInt(townCount - 1) + 1;
         Integer startTown = 1;
         System.out.println("Start from town: " + startTown);
 
-        int townsPassed = 1;
-        List<Integer> townsToVisit = new ArrayList<>(townsLeft);
-        townsToVisit.remove(startTown);
-        while (townsLeft.size() != 1) {
-            System.out.println("Step " + townsPassed);
-            System.out.println("Towns passed=" + townsPassed);
-            System.out.println("Towns left: " + townsLeft);
+        for (int t = 0; t < townCount-1; t++) {
+            System.out.println("Step " + (t + 1));
 
-            Integer townFrom = 0;
             Integer townTo = 0;
+            Integer townFrom = 0;
             int minDistance = Integer.MAX_VALUE;
-            for (Integer town : townsLeft) {
+            for (Integer canVisitRowTown : visitFrom) {
                 int minDistanceInRow = Integer.MAX_VALUE;
-                int townToCur = 0;
-                for (Integer townToVisit : townsToVisit) {
-                    int curDistanceInRow = townsDistance[town - 1][townToVisit - 1];
-                    if ((minDistanceInRow > curDistanceInRow) && (!Objects.equals(town, townToVisit))) {
+                int townToVisit = 0;
+                for (Integer canVisitColTown : visitTo) {
+                    int curDistanceInRow = townsDistance[canVisitRowTown - 1][canVisitColTown - 1];
+                    if ((canVisitRowTown - 1) != (canVisitColTown - 1) &&
+                            !visitedBy.containsKey(canVisitColTown) &&
+                            !visitedBy.containsValue(canVisitRowTown) &&
+                            !(visitedBy.containsKey(canVisitRowTown) && visitedBy.containsValue(canVisitColTown)) &&
+                            minDistanceInRow > curDistanceInRow
+                    ) {
                         minDistanceInRow = curDistanceInRow;
-                        townToCur = townToVisit;
+                        townToVisit = canVisitColTown;
+
                     }
                 }
                 if (minDistance > minDistanceInRow) {
                     minDistance = minDistanceInRow;
-                    townFrom = town;
-                    townTo = townToCur;
+                    townFrom = canVisitRowTown;
+                    townTo = townToVisit;
                 }
             }
             System.out.println("Choosing: " + townFrom + "-" + townTo);
             System.out.println("Distance=" + minDistance);
-            townsLeft.remove(townFrom);
-            townsToVisit.remove(townTo);
-            townsPassed++;
+            visitFrom.remove(townFrom);
+            visitTo.remove(townTo);
+            visitedBy.put(townTo, townFrom);
         }
 
-        // constructPathFromTown(startTown);
+        System.out.println("Answer:");
+        constructPathFromTown(startTown, visitedBy);
+    }
+
+    private static void constructPathFromTown(Integer startTown, Map<Integer, Integer> visitedBy) {
+        Map<Integer, Integer> passage = swapMapOfPairs(visitedBy);
+        int townCount = visitedBy.size();
+        List<Integer> unvisited = generateTownsSequentially(townCount);
+        Integer lastTown = startTown;
+        for (int i = 0; i < townCount; i++) {
+            System.out.print(lastTown + " -> ");
+            unvisited.remove(lastTown);
+            lastTown = passage.get(lastTown);
+        }
+        System.out.println(lastTown);
+    }
+
+    private static Map<Integer, Integer> swapMapOfPairs(Map<Integer, Integer> visitedBy) {
+        Map<Integer, Integer> passage = new HashMap<>();
+        visitedBy.forEach(
+                (k, v) -> passage.put(v, k)
+        );
+        return passage;
+    }
+
+    private static int[][] prepareConstantMatrix2() {
+        return new int[][]{
+                new int[]{9, 6, 5, 7, 3},
+                new int[]{4, 4, 5, 9, 6},
+                new int[]{5, 9, 6, 2, 7},
+                new int[]{10, 9, 1, 8, 2},
+                new int[]{2, 6, 8, 5, 8}
+        };
     }
 
     private static int[][] prepareConstantMatrix(int dimension) {
