@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 public class NearestTown {
@@ -13,22 +14,23 @@ public class NearestTown {
     public static void nearestTownMethod(int townCount) {
         List<Integer> visitFrom = generateTownsSequentially(townCount);
         List<Integer> visitTo = generateTownsSequentially(townCount);
-        //int[][] townsDistance = prepareConstantMatrix(townCount);
-        //int[][] townsDistance = prepareConstantMatrix2();
+
         int[][] townsDistance = fillRandom(townCount);
         printTownsDistance(townsDistance);
         System.out.println();
         Map<Integer, Integer> visitedBy = new HashMap<>();
-        //Integer startTown = rand.nextInt(townCount - 1) + 1;
-        Integer startTown = 1;
+        Integer startTown = rand.nextInt(townCount - 1) + 1;
         System.out.println("Start from town: " + startTown);
-
-        for (int t = 0; t < townCount-1; t++) {
+        int currentPathDistance = 0;
+        for (int t = 0; t < townCount - 1; t++) {
             System.out.println("Step " + (t + 1));
-
+            System.out.println("Current pairs:");
+            printAllPairs(visitedBy);
             Integer townTo = 0;
             Integer townFrom = 0;
             int minDistance = Integer.MAX_VALUE;
+            System.out.println("can visit from: " + visitFrom);
+            System.out.println("can visit to: " + visitTo);
             for (Integer canVisitRowTown : visitFrom) {
                 int minDistanceInRow = Integer.MAX_VALUE;
                 int townToVisit = 0;
@@ -37,12 +39,16 @@ public class NearestTown {
                     if ((canVisitRowTown - 1) != (canVisitColTown - 1) &&
                             !visitedBy.containsKey(canVisitColTown) &&
                             !visitedBy.containsValue(canVisitRowTown) &&
-                            !(visitedBy.containsKey(canVisitRowTown) && visitedBy.containsValue(canVisitColTown)) &&
-                            minDistanceInRow > curDistanceInRow
+                            !(visitedBy.containsKey(canVisitRowTown) &&
+                                    Objects.equals(visitedBy.get(canVisitRowTown), canVisitColTown)) &&
+                            canStick(canVisitRowTown, canVisitColTown, visitedBy, startTown, townCount)
                     ) {
-                        minDistanceInRow = curDistanceInRow;
-                        townToVisit = canVisitColTown;
-
+                        System.out.println("candidate: " + canVisitRowTown + "-" + canVisitColTown +
+                                ", distance=" + curDistanceInRow);
+                        if (minDistanceInRow > curDistanceInRow) {
+                            minDistanceInRow = curDistanceInRow;
+                            townToVisit = canVisitColTown;
+                        }
                     }
                 }
                 if (minDistance > minDistanceInRow) {
@@ -53,13 +59,66 @@ public class NearestTown {
             }
             System.out.println("Choosing: " + townFrom + "-" + townTo);
             System.out.println("Distance=" + minDistance);
+            currentPathDistance += minDistance;
+            System.out.println("Current path distance: " + currentPathDistance);
             visitFrom.remove(townFrom);
             visitTo.remove(townTo);
             visitedBy.put(townTo, townFrom);
         }
 
+        Integer lastTownFrom = visitFrom.get(0);
+        Integer lastTownTo = visitTo.get(0);
+        int distance = townsDistance[lastTownFrom - 1][lastTownTo - 1];
+        System.out.println("Choosing last towns: " + lastTownFrom + "-" + lastTownTo);
+        System.out.println("Distance=" + distance);
+        currentPathDistance += distance;
+        visitedBy.put(lastTownTo, lastTownFrom);
+
         System.out.println("Answer:");
         constructPathFromTown(startTown, visitedBy);
+        System.out.println("Distance: " + currentPathDistance);
+    }
+
+    private static void printAllPairs(Map<Integer, Integer> visitedBy) {
+        visitedBy.forEach(
+                (k, v) -> System.out.println(v + "-" + k)
+        );
+    }
+
+    private static boolean canStick(Integer fromTown, Integer toTown, Map<Integer, Integer> visitedBy, Integer startTown, int townCount) {
+        Map<Integer, Integer> passage = swapMapOfPairs(visitedBy);
+
+        if (chainExists(toTown, fromTown, passage)) {
+            return false;
+        }
+        int leftSteps = countStepsBetweenTowns(startTown, fromTown, startTown, passage, townCount);
+        int rightSteps = countStepsBetweenTowns(toTown, startTown, startTown, passage, townCount);
+        if (leftSteps == -1 || rightSteps == -1) {
+            return true;
+        }
+        return leftSteps + rightSteps >= (townCount - 1);
+    }
+
+    private static boolean chainExists(Integer from, Integer to, Map<Integer, Integer> passage) {
+        while (from != null) {
+            if (from.equals(to)) {
+                return true;
+            }
+            from = passage.get(from);
+        }
+        return false;
+    }
+
+    private static int countStepsBetweenTowns(Integer to, Integer start, Integer startTown, Map<Integer, Integer> passage, int townCount) {
+        int steps = 0;
+        while (steps != townCount && to != null) {
+            if (to.equals(start)) {
+                return steps;
+            }
+            to = passage.get(to);
+            steps++;
+        }
+        return -1;
     }
 
     private static void constructPathFromTown(Integer startTown, Map<Integer, Integer> visitedBy) {
@@ -81,41 +140,6 @@ public class NearestTown {
                 (k, v) -> passage.put(v, k)
         );
         return passage;
-    }
-
-    private static int[][] prepareConstantMatrix2() {
-        return new int[][]{
-                new int[]{9, 6, 5, 7, 3},
-                new int[]{4, 4, 5, 9, 6},
-                new int[]{5, 9, 6, 2, 7},
-                new int[]{10, 9, 1, 8, 2},
-                new int[]{2, 6, 8, 5, 8}
-        };
-    }
-
-    private static int[][] prepareConstantMatrix(int dimension) {
-        int[][] ans = new int[dimension][dimension];
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                ans[i][j] = i % 3 + j % 2 + 1;
-            }
-        }
-        return ans;
-    }
-
-    private static void printPath(int[] passage) {
-        for (int i = 0; i < passage.length - 1; i++) {
-            System.out.print(passage[i] + " -> ");
-        }
-        System.out.println(passage[passage.length - 1]);
-    }
-
-    private static int getPathDistance(int[][] townsDistance, int[] passage) {
-        int dist = 0;
-        for (int i = 0; i < townsDistance.length - 1; i++) {
-            dist += townsDistance[passage[i] - 1][passage[i + 1] - 1];
-        }
-        return dist;
     }
 
     private static void printTownsDistance(int[][] townsDistance) {
