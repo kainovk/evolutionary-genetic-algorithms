@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
-public class NearestTown {
+public class NearestTownComplex {
 
     private static final Random rand = new Random();
 
