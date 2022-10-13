@@ -1,6 +1,5 @@
 package knapsack_greedy;
 
-import java.text.Format;
 import java.util.Arrays;
 
 public class KnapsackGreedyDanzig {
@@ -59,13 +58,6 @@ public class KnapsackGreedyDanzig {
             ans[i] = (double) c[i] / w[i];
         }
         return ans;
-    }
-
-    private static void printInOrder(int[] ans, int[] order) {
-        for (int i = 0; i < ans.length; i++) {
-            System.out.print(ans[order[i]] + " ");
-        }
-        System.out.println();
     }
 
     private static int[] naturalOrder(int n) {
