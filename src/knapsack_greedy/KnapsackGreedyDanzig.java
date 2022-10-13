@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class KnapsackGreedyDanzig {
 
-    public static int knapsackGreedy(int n, int wMax, int[] w, int[] c) {
+    public static int knapsackGreedyDanzig(int n, int wMax, int[] w, int[] c) {
         System.out.println("Initial parameters:");
         System.out.println("Items count: " + n);
         System.out.println("W max = " + wMax);
@@ -74,7 +74,7 @@ public class KnapsackGreedyDanzig {
         int[] w = new int[]{3, 4, 5, 8, 9};
         int[] c = new int[]{1, 6, 4, 7, 6};
 
-        int ans = knapsackGreedy(n, wMax, w, c);
+        int ans = knapsackGreedyDanzig(n, wMax, w, c);
         System.out.println(ans);
     }
 }

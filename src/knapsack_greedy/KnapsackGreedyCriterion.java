@@ -9,7 +9,7 @@ public class KnapsackGreedyCriterion {
 
     private static final Random rand = new Random();
 
-    public static int knapsackGreedy(int n, int wMax, int[] w, int[] c) {
+    public static int knapsackGreedyCriterion(int n, int wMax, int[] w, int[] c) {
         System.out.println("Initial parameters:");
         System.out.println("Items count: " + n);
         System.out.println("W max = " + wMax);
@@ -89,7 +89,7 @@ public class KnapsackGreedyCriterion {
         int[] w = new int[]{5, 2, 6, 4, 7};
         int[] c = new int[]{4, 2, 7, 5, 7};
 
-        int ans = knapsackGreedy(n, wMax, w, c);
+        int ans = knapsackGreedyCriterion(n, wMax, w, c);
         System.out.println(ans);
     }
 }

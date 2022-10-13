@@ -10,7 +10,7 @@ public class KnapsackGreedyDanzigCriterion {
 
     private static final Random rand = new Random();
 
-    public static int knapsackGreedy(int n, int wMax, int[] w, int[] c) {
+    public static int knapsackGreedyDanzigCriterion(int n, int wMax, int[] w, int[] c) {
         DecimalFormat df = new DecimalFormat("#.###");
 
         System.out.println("Initial parameters:");
@@ -114,7 +114,7 @@ public class KnapsackGreedyDanzigCriterion {
         int[] w = new int[]{3, 4, 5, 8, 9};
         int[] c = new int[]{1, 6, 4, 7, 6};
 
-        int ans = knapsackGreedy(n, wMax, w, c);
+        int ans = knapsackGreedyDanzigCriterion(n, wMax, w, c);
         System.out.println(ans);
     }
 }
