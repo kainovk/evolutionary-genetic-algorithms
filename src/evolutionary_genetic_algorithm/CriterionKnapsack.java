@@ -5,14 +5,14 @@ import java.util.Scanner;
 import static knapsack_greedy.KnapsackGreedyCriterion.knapsackGreedyCriterion;
 import static knapsack_greedy.KnapsackGreedyDanzigCriterion.knapsackGreedyDanzigCriterion;
 
-public class EGAKnapsack {
+public class CriterionKnapsack {
 
-    public static void runEGAKnapsack(int n, int wMax, int[] w, int[] c) {
+    public static void runCriterionKnapsack(int n, int wMax, int[] w, int[] c) {
         System.out.println("Choose algorithm: ");
         System.out.println("1 - knapsack greedy");
         System.out.println("2 - knapsack greedy danzig");
         Scanner sc = new Scanner(System.in);
-        String choice="";
+        String choice = "";
 
         while (!choice.equals("!quit")) {
             while (!choice.equals("1") && !choice.equals("2")) {
@@ -44,6 +44,6 @@ public class EGAKnapsack {
         int[] w = new int[]{17, 20, 1, 26, 28, 26, 21, 23, 18, 24, 7, 20, 28, 5, 22};
         int[] c = new int[]{27, 2, 17, 12, 3, 16, 10, 19, 1, 6, 12, 12, 27, 28, 9};
 
-        runEGAKnapsack(n, wMax, w, c);
+        runCriterionKnapsack(n, wMax, w, c);
     }
 }
