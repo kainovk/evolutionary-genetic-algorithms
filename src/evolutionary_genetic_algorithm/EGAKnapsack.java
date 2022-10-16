@@ -283,7 +283,6 @@ public class EGAKnapsack {
     private Set<Individual> fibonacciSelection(Set<Individual> individuals) {
         List<Individual> individualList = new ArrayList<>(individuals);
         Collections.sort(individualList);
-        System.out.println("Converted from TreeSet to ArrayList:" + individualList);
         while (individualList.size() > populationSize) {
             List<Integer> fibNumbers = getFibNumbersUntil(individualList.size());
             while (!fibNumbers.isEmpty() && individualList.size() > populationSize) {
@@ -295,7 +294,6 @@ public class EGAKnapsack {
                 fibNumbers.remove(0);
             }
         }
-        System.out.println("RESULT LIST: " + individualList);
         return new TreeSet<>(individualList);
     }
 
@@ -309,7 +307,6 @@ public class EGAKnapsack {
             lastNumber = number;
             i++;
         }
-        System.out.println("Got fibonaci numbers (indexes to delete): " + numbers);
         return numbers;
     }
 
@@ -521,10 +518,10 @@ public class EGAKnapsack {
         System.out.println("2 - fibonacci selection");
         int selectionChoice = sc.nextInt();*/
 
-        int populationSize = 5;
-        int crossoversNumber = 2;
+        int populationSize = 15;
+        int crossoversNumber = 5;
         int mutationChance = 20;
-        int lifeCycleLimit = 25;
+        int lifeCycleLimit = 50;
 
         int formPopulationChoice = 1;
         int reproduceChoice = 2;
