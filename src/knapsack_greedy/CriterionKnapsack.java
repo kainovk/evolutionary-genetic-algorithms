@@ -1,4 +1,4 @@
-package evolutionary_genetic_algorithm;
+package knapsack_greedy;
 
 import java.util.Scanner;
 
