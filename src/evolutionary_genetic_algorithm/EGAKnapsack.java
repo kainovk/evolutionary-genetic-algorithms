@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -17,8 +16,8 @@ class Individual implements Comparable {
     private static final Random rand = new Random();
 
     private final int[] chromosome;
-    private final int fitness;
-    private final int weight;
+    private int fitness;
+    private int weight;
 
     public Individual(int chromosomeNumber, int[] w, int[] c) {
         chromosome = new int[chromosomeNumber];
@@ -46,10 +45,19 @@ class Individual implements Comparable {
         return fitness;
     }
 
-    public Set<Individual> crossover(Individual p2, int[] w, int[] c) {
+    public Set<Individual> crossover(Individual p2, int[] w, int[] c, int crossoverChoice) {
+        Set<Individual> resultSet = new HashSet<>();
         Individual i1 = new Individual(this, p2, w, c);
         Individual i2 = new Individual(p2, this, w, c);
-        Set<Individual> resultSet = new HashSet<>();
+
+        switch (crossoverChoice) {
+            case 1:
+                break;
+            case 2:
+                i1.mutateInverse(100, c, w);
+                i2.mutateInverse(100, c, w);
+                break;
+        }
         resultSet.add(i1);
         resultSet.add(i2);
         return resultSet;
@@ -91,7 +99,7 @@ class Individual implements Comparable {
     }
 
     // 0 -> 1 c шансом 10% для каждой хромосомы
-    public void mutateEvolve(int mutationChance) {
+    public void mutateEvolve(int mutationChance, int[] c, int[] w) {
         double evoluteChance = 0.1;
         if (mutationChance > 0 && (Math.random() * 100) < mutationChance) {
             for (int i = 0; i < chromosome.length; i++) {
@@ -100,17 +108,21 @@ class Individual implements Comparable {
                 }
             }
         }
+        fitness = getFitness(c);
+        weight = getWeight(w);
     }
 
-    public void mutateInverse(int mutationChance) {
+    public void mutateInverse(int mutationChance, int[] c, int[] w) {
         if (mutationChance > 0 && (Math.random() * 100) < mutationChance) {
             for (int i = 0; i < chromosome.length; i++) {
                 chromosome[i] = chromosome[i] == 0 ? 1 : 0;
             }
         }
+        fitness = getFitness(c);
+        weight = getWeight(w);
     }
 
-    public void mutateRearrange(int mutationChance) {
+    public void mutateRearrange(int mutationChance, int[] c, int[] w) {
         int length = chromosome.length;
         if (mutationChance > 0 && (Math.random() * 100) < mutationChance) {
             int randomIndex = rand.nextInt(chromosome.length / 2);
@@ -118,6 +130,8 @@ class Individual implements Comparable {
             chromosome[randomIndex] = chromosome[length - randomIndex - 1];
             chromosome[length - randomIndex - 1] = tmp;
         }
+        fitness = getFitness(c);
+        weight = getWeight(w);
     }
 
     public int getWeight(int[] w) {
@@ -179,6 +193,7 @@ public class EGAKnapsack {
     // выбор операторов
     private final int formPopulationChoice;
     private final int reproduceChoice;
+    private final int crossoverChoice;
     private final int mutateChoice;
     private final int selectionChoice;
 
@@ -190,7 +205,7 @@ public class EGAKnapsack {
     public EGAKnapsack(int populationSize, int crossoversNumber,
                        int mutationChance, int lifeCycleLimit,
                        int wMax, int[] w, int[] c,
-                       int formPopulationChoice, int reproduceChoice, int mutateChoice, int selectionChoice) {
+                       int formPopulationChoice, int reproduceChoice, int crossoverChoice, int mutateChoice, int selectionChoice) {
         this.populationSize = populationSize;
         this.crossoversNumber = crossoversNumber;
         this.mutationChance = mutationChance;
@@ -200,14 +215,14 @@ public class EGAKnapsack {
         this.c = c;
         this.formPopulationChoice = formPopulationChoice;
         this.reproduceChoice = reproduceChoice;
+        this.crossoverChoice = crossoverChoice;
         this.mutateChoice = mutateChoice;
         this.selectionChoice = selectionChoice;
     }
 
     public void runEGA() {
-        // 1) случайное формирование +
-        // 2) жадный алгоритм +
-        //formPopulationChoice = 2;
+        // 1) случайное формирование
+        // 2) жадный алгоритм
         Set<Individual> individuals = formInitialPopulation(formPopulationChoice);
 
         for (int t = 0; t < lifeCycleLimit; t++) {
@@ -215,22 +230,22 @@ public class EGAKnapsack {
             System.out.println("POPULATION #" + (t + 1));
             printSeparator();
 
-            // 1) случайный выбор +
-            // 2) турнирный выбор +
-            //reproduceChoice = 2;
+            // 1) случайный выбор
+            // 2) турнирный выбор
+
+            // 1) скрещивание
+            // 2) скрещивание+инверсия
             for (int i = 0; i < crossoversNumber; i++) {
                 reproduce(individuals, reproduceChoice);
             }
 
-            // 1) 0 -> 1, c шансом 10% для каждой хромосомы +
-            // 2) инверсия +
-            // 3) перестановка 2 хромосом +
-            //mutateChoice = 1;
+            // 1) 0 -> 1, c шансом 10% для каждой хромосомы
+            // 2) инверсия
+            // 3) перестановка 2 хромосом
             individuals = mutate(individuals, mutateChoice);
 
-            // 1) случайный отбор +
+            // 1) случайный отбор
             // 2) fibonacci selection + (сортируем по fitness, удаляем по индексам фибоначчи, начиная с 1)
-            //selectionChoice = 2;
             individuals = formNextPopulation(individuals, selectionChoice);
 
             System.out.println("Best individual:");
@@ -244,14 +259,7 @@ public class EGAKnapsack {
         printSeparator();
         System.out.println("BEST INDIVIDUAL:");
         printSeparator();
-        Individual bestIndividual = individuals.stream()
-                .reduce((i1, i2) -> {
-                    if (i1.getFitness() > i2.getFitness()) {
-                        return i1;
-                    }
-                    return i2;
-                })
-                .orElse(null);
+        Individual bestIndividual = individuals.stream().max(Individual::compareTo).orElse(null);
         System.out.println(bestIndividual);
     }
 
@@ -331,13 +339,13 @@ public class EGAKnapsack {
 
         switch (mutateChoice) {
             case 1:
-                individuals.forEach(i -> i.mutateEvolve(mutationChance));
+                individuals.forEach(i -> i.mutateEvolve(mutationChance, c, w));
                 break;
             case 2:
-                individuals.forEach(i -> i.mutateInverse(mutationChance));
+                individuals.forEach(i -> i.mutateInverse(mutationChance, c, w));
                 break;
             case 3:
-                individuals.forEach(i -> i.mutateRearrange(mutationChance));
+                individuals.forEach(i -> i.mutateRearrange(mutationChance, c, w));
         }
         return individuals.stream().filter(individual -> individual.isCorrect(wMax, w)).collect(Collectors.toSet());
     }
@@ -346,7 +354,6 @@ public class EGAKnapsack {
         printSeparator();
         System.out.println("REPRODUCTION PHASE");
         printSeparator();
-
         Set<Individual> children = new HashSet<>();
         switch (reproduceChoice) {
             case 1:
@@ -382,7 +389,7 @@ public class EGAKnapsack {
             }
 
         }
-        return p1.crossover(p2, w, c);
+        return p1.crossover(p2, w, c, crossoverChoice);
     }
 
     private Individual chooseWhateverNotP1(Set<Individual> individuals, Individual p1) {
@@ -397,7 +404,7 @@ public class EGAKnapsack {
     private Individual getRandomTournamentWinner(Set<Individual> individuals, int size) {
         List<Individual> list = new ArrayList<>(individuals);
         Collections.shuffle(list);
-        System.out.println("EGAKnapsack.getRandomTournamentWinner");
+        System.out.println("tournament:");
         Optional<Individual> winner = list.stream()
                 .limit(size)
                 .peek(individual -> System.out.println("candidate: " + individual))
@@ -414,7 +421,7 @@ public class EGAKnapsack {
         List<Individual> parents = chooseParents(individuals);
         Individual p1 = parents.get(0);
         Individual p2 = parents.get(1);
-        return p1.crossover(p2, w, c);
+        return p1.crossover(p2, w, c, crossoverChoice);
     }
 
     private List<Individual> chooseParents(Set<Individual> individuals) {
@@ -486,7 +493,7 @@ public class EGAKnapsack {
     }
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        /*Scanner sc = new Scanner(System.in);
         System.out.println("Enter population size:");
         int populationSize = sc.nextInt();
         System.out.println("Enter number of crossovers:");
@@ -512,18 +519,19 @@ public class EGAKnapsack {
         System.out.println("Enter selection operator:");
         System.out.println("1 - random");
         System.out.println("2 - fibonacci selection");
-        int selectionChoice = sc.nextInt();
+        int selectionChoice = sc.nextInt();*/
 
-        /*int populationSize = 10;
-        int crossoversNumber = 5;
+        int populationSize = 5;
+        int crossoversNumber = 2;
         int mutationChance = 20;
-        int lifeCycleLimit = 50;
+        int lifeCycleLimit = 25;
 
-        int formPopulationChoice = 2;
+        int formPopulationChoice = 1;
         int reproduceChoice = 2;
+        int crossoverChoice = 1;
         int mutateChoice = 1;
         int selectionChoice = 2;
-        */
+
 
         if (populationSize < 0 || lifeCycleLimit < 0 ||
                 mutationChance < 0 || mutationChance > 100 ||
@@ -545,7 +553,7 @@ public class EGAKnapsack {
                 crossoversNumber, mutationChance,
                 lifeCycleLimit,
                 wMax, w, c,
-                formPopulationChoice, reproduceChoice, mutateChoice, selectionChoice);
+                formPopulationChoice, reproduceChoice, crossoverChoice, mutateChoice, selectionChoice);
         ega.runEGA();
     }
 }
